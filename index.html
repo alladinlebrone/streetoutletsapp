@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Street Outlets | Customer Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #28a745;
+      --yellow: #ffc107;
+      --background: #f0f2f5;
+      --card-bg: #ffffff;
+      --text: #333;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--background);
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, #28a745, #218838);
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+      border-bottom-left-radius: 2rem;
+      border-bottom-right-radius: 2rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: -2rem auto 2rem;
+      padding: 1rem;
+    }
+
+    section {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease;
+    }
+
+    section:hover {
+      transform: translateY(-3px);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.3rem;
+      color: var(--green);
+    }
+
+    .specials p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    textarea, button {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border-radius: var(--radius);
+      margin-top: 0.75rem;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: var(--green);
+      color: white;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #218838;
+    }
+
+    .message {
+      margin-top: 0.5rem;
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .stamps {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+    }
+
+    .stamp {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ccc;
+      transition: background 0.3s ease;
+    }
+
+    .stamp.active {
+      background: var(--yellow);
+      box-shadow: 0 0 6px var(--yellow);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      padding: 2rem 1rem;
+      color: #888;
+    }
+
+    .edit-admin {
+      display: none;
+      margin-top: 1rem;
+    }
+
+    .toggle-edit {
+      margin-top: 1rem;
+      background: #007bff;
+    }
+
+    .toggle-edit:hover {
+      background: #0056b3;
+    }
+
+    @media (max-width: 480px) {
+      .stamp {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Street Outlets</h1>
+    <p>Engage. Delight. Retain.</p>
+  </header>
+
+  <div class="container">
+    <section class="specials">
+      <h2>🌮 Today’s Specials</h2>
+      <p id="specialText">🍔 BBQ Chicken Burger – €6.50<br>🥤 Free drink with any wrap!</p>
+      <div class="edit-admin" id="editBlock">
+        <textarea id="specialInput"></textarea>
+        <button onclick="saveSpecials()">Save</button>
+      </div>
+      <button class="toggle-edit" onclick="toggleEdit()">Edit Specials (Admin)</button>
+    </section>
+
+    <section class="feedback">
+      <h2>📝 Customer Feedback</h2>
+      <textarea id="feedbackInput" rows="4" placeholder="How was your meal or service?"></textarea>
+      <button onclick="submitFeedback()">Send Feedback</button>
+      <p class="message" id="feedbackMsg"></p>
+    </section>
+
+    <section class="loyalty">
+      <h2>🎁 Loyalty Tracker</h2>
+      <p>Buy 5, Get 1 Free!</p>
+      <div class="stamps" id="stampsContainer"></div>
+      <button onclick="addStamp()">Add Stamp</button>
+    </section>
+  </div>
+
+  <footer>
+    &copy; 2025 Street Outlets Limited
+  </footer>
+
+  <script>
+    // Loyalty Stamps
+    const stampKey = 'loyaltyStamps';
+    const container = document.getElementById('stampsContainer');
+
+    function renderStamps() {
+      const count = Number(localStorage.getItem(stampKey)) || 0;
+      container.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        const stamp = document.createElement('div');
+        stamp.className = 'stamp' + (i < count ? ' active' : '');
+        container.appendChild(stamp);
+      }
+    }
+
+    function addStamp() {
+      let count = Number(localStorage.getItem(stampKey)) || 0;
+      if (count < 5) {
+        count++;
+        localStorage.setItem(stampKey, count);
+        renderStamps();
+        if (count === 5) alert('🎉 Free meal unlocked!');
+      } else {
+        alert('✅ You already have 5 stamps. Claim your reward!');
+      }
+    }
+
+    renderStamps();
+
+    // Feedback
+    function submitFeedback() {
+      const input = document.getElementById('feedbackInput');
+      const msg = document.getElementById('feedbackMsg');
+      if (input.value.trim() !== '') {
+        localStorage.setItem('feedback_' + new Date().getTime(), input.value);
+        msg.textContent = '✅ Thank you for your feedback!';
+        input.value = '';
+        setTimeout(() => msg.textContent = '', 3000);
+      }
+    }
+
+    // Specials Edit
+    function toggleEdit() {
+      const block = document.getElementById('editBlock');
+      const text = document.getElementById('specialText');
+      const area = document.getElementById('specialInput');
+      block.style.display = block.style.display === 'none' ? 'block' : 'none';
+      area.value = text.innerHTML.replace(/<br>/g, '\n');
+    }
+
+    function saveSpecials() {
+      const area = document.getElementById('specialInput');
+      const formatted = area.value.replace(/\n/g, '<br>');
+      document.getElementById('specialText').innerHTML = formatted;
+      localStorage.setItem('specials', formatted);
+      document.getElementById('editBlock').style.display = 'none';
+    }
+
+    // Load stored specials
+    const savedSpecials = localStorage.getItem('specials');
+    if (savedSpecials) {
+      document.getElementById('specialText').innerHTML = savedSpecials;
+    }
+  </script>
+</body>
+</html>
